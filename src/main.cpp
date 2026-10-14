@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "minefield.h"
 #include <cmath>
 #include <vector>
 
@@ -8,6 +9,8 @@ int main() {
     const int screenHeight = 450;
 
     InitWindow(screenWidth, screenHeight, "raylib template window");
+    Minefield mainField(10);
+
 
     SetTargetFPS(60);
 
