@@ -1,4 +1,32 @@
 #include "Tile.h"
+#include "minefield.h"
+
+
+
+void Tile::click()
+{
+    if(hasBeenClicked){
+        return;
+    }
+
+    hasBeenClicked = true;
+    changeState(cleared);
+
+    if (isMine) {
+        button.tex = textures[11];
+
+        if (parent != nullptr) {
+            static_cast<Minefield*>(parent)->gameOver();
+        }
+    } else {
+        button.tex = textures[nearMines];
+        if(nearMines == 0){
+            static_cast<Minefield*>(parent)->clickNeighbors(this->id);
+        }
+    }
+
+}
+
 
 // Shared by every tile so the image resources are loaded only once.
 Texture2D Tile::textures[12]{};

@@ -19,7 +19,7 @@ int main() {
     {
         // Keep the board in a nested scope so its tiles are destroyed before
         // their shared textures and the graphics context are released.
-        Minefield mainField(40,20);
+        Minefield mainField(40,20,2);
 
         // raylib reports true when the user closes the window or presses Escape.
         while (!WindowShouldClose()) {

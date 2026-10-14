@@ -25,6 +25,8 @@ class Minefield{
 
       // Contiguous row-major storage: element (x, y) is at y * sizeX + x.
       Tile* field;
+
+      const float mineChance;
   public:
 
       // The class uniquely owns field, and each Tile callback captures its address.
@@ -32,18 +34,22 @@ class Minefield{
       Minefield& operator=(const Minefield&) = delete;
 
       /// Constructs a square board.
-      Minefield(int size): Minefield(size,size) {}
+      Minefield(int size, float chance): Minefield(size,size,chance) {}
 
       /// Constructs a board with X columns and Y rows.
-      Minefield(int X, int Y)
-          : sizeX(X),
+      Minefield(int X, int Y, float chance)
+          : mineChance(chance),
+            sizeX(X),
             sizeY(Y),
             field(new Tile[static_cast<std::size_t>(X) * Y]) {
 
           // Initialize cell contents and choose a square tile size that fits the
           // board along the window's shorter axis while preserving the margin.
           for(int i=0;i<sizeX*sizeY; i++){
-              field[i].isMine = GetRandomValue(0, 1);
+
+
+              field[i].isMine = GetRandomValue(0, 100)<=chance;
+              field[i].parent = this;
               field[i].id = i;
 
               // scale based off of the smallest dimention
@@ -98,12 +104,13 @@ class Minefield{
               throw std::range_error("out of bounds read attempt: "+std::to_string(X)+','+std::to_string(Y));
           }
           if(X<0 || Y<0){
-              throw std::range_error("out of bounds: negative read");
+              throw std::range_error("out of bounds: negative read: "+std::to_string(X)+','+std::to_string(Y));
           }
 
           return field[(Y*sizeX) + X];
 
       }
+      bool isGameOver = false;
 
       /// Draws every tile and processes its input for the current frame.
       void updateAll(){
@@ -112,5 +119,42 @@ class Minefield{
                   at(x, y).button.update();
               }
           }
+
+          if(isGameOver){
+              DrawText("Game Over", GetScreenWidth()/2-320, GetScreenHeight()/2-100, 120, BLACK);
+          }
       }
+
+      void gameOver(){
+          isGameOver = true;
+          for(int i=0;i<sizeX*sizeY;i++){
+              field[i].clear();
+              if(field[i].isMine){
+                  field[i].button.tex = Tile::textures[11];
+              }
+
+              field[i].button.clickable = false;
+          }
+      }
+
+      void clickNeighbors(int id){
+          for(int y=0; y<sizeY;y++){
+              for(int x=0; x<sizeX;x++){
+                  if(at(x, y).id != id){
+                      continue;
+                  }
+
+                  for(int sy=y-1;sy<=y+1;sy++){
+                      for(int sx=x-1;sx<=x+1;sx++){
+                          try {
+                              at(sx, sy).click();
+                          } catch (std::range_error e) {
+                              //ignore
+                          }
+                      }
+                  }
+              }
+          }
+      }
+
 };
