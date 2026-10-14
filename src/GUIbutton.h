@@ -24,6 +24,8 @@ class GUIbutton{
         Vector2 size;
         Texture2D tex{};
         Color tint = WHITE;
+        bool clickable = true;
+
 
         /// Creates a button with its geometry, texture, and mouse-release actions.
         GUIbutton(Vector2 p, Vector2 s, Texture2D texture, std::function<void()> left, std::function<void()> right)
@@ -47,6 +49,9 @@ class GUIbutton{
             const Rectangle destination{position.x, position.y, size.x, size.y};
             DrawTexturePro(tex, source, destination, Vector2{0.0f, 0.0f}, 0.0f, tint);
 
+            if(!clickable){
+                return;
+            }
             // Input outside the control must not trigger either callback.
             if (!isWithin(GetMousePosition())) {
                 return;

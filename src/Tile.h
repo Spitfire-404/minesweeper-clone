@@ -27,25 +27,29 @@ struct Tile{
     GUIbutton button;
     int nearMines = 0; ///< Number of mines in the surrounding 3x3 region.
     bool isMine = false;
+    bool hasBeenClicked = false;
     int id;            ///< Row-major index assigned by Minefield.
+    void* parent = nullptr;/// this needs to be a void pointer annoyingly
 
     /// Reveals the cell and selects either its mine or adjacent-count texture.
-    void click(){
+    void click();
+    void clear(){
         changeState(cleared);
 
-        if(isMine){
-            // The final texture slot is reserved for the revealed mine face.
-            button.tex = textures[11];
-        }
-        else
-        {
-            // Number textures occupy indices 0-8, matching nearMines directly.
-            button.tex = textures[nearMines];
-        }
+        button.tex = textures[nearMines];
     }
 
     /// Marks the cell with the flag texture.
     void flag(){
+        if (state == flagged){
+            if(hasBeenClicked){
+                clear();
+            }else{
+
+                changeState(unknown);
+            }
+        }
+        else
         changeState(flagged);
     }
 
