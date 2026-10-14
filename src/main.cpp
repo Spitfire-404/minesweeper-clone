@@ -1,7 +1,6 @@
 #include "raylib.h"
 #include "minefield.h"
-#include <cmath>
-#include <vector>
+
 
 int main() {
 
@@ -10,26 +9,24 @@ int main() {
     const int screenHeight = 450;
 
     InitWindow(screenWidth, screenHeight, "raylib template window");
-    Minefield mainField(10);
-
+    Tile::loadTextures();
 
     SetTargetFPS(60);
 
-    // Main game loop
+    {
+        Minefield mainField(10);
 
-    while (!WindowShouldClose()) {
-        // Draw
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
+        while (!WindowShouldClose()) {
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
 
-        mainField.updateAll();
+            mainField.updateAll();
 
-
-
-        EndDrawing();
+            EndDrawing();
+        }
     }
 
-
+    Tile::unloadTextures();
     CloseWindow();
     return 0;
 }

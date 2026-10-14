@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "GUIbutton.h"
+#include "Tile.h"
 #include "raylib.h"
 #include <cstddef>
 #include <cstdint>
@@ -10,54 +10,6 @@
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>
-struct Tile{
-    enum State{unknown,cleared,flagged};
-    State state = unknown;
-    GUIbutton button;
-    uint nearMines = 0;
-    bool isMine = false;
-    int id;
-
-    void click(){
-        changeState(cleared);
-
-        if(isMine)
-            button.color = RED;
-        else
-            button.color = GREEN;
-    }
-    void flag(){
-        changeState(flagged);
-    }
-
-    Tile(bool mine = false)
-        : button(
-              Vector2{0, 0},
-              Vector2{20, 20},
-              [this] { click(); },
-              [this] { flag();  }
-          ),
-          isMine(mine)
-    {}
-
-
-    void changeState(State in){
-        state =in;
-        switch (state) {
-            case cleared:
-                this->button.color = GREEN;
-                break;
-            case unknown:
-                this->button.color = GRAY;
-                break;
-            case flagged:
-                this->button.color = BLUE;
-
-        }
-    }
-
-};
-
 
 class Minefield{
   private:
@@ -74,8 +26,10 @@ class Minefield{
       Minefield& operator=(const Minefield&) = delete;
 
       Minefield(int size): Minefield(size,size) {}
-      Minefield(int X, int Y):  sizeX(X), sizeY(Y) {
-          field = new Tile[sizeX*sizeY];
+      Minefield(int X, int Y)
+          : sizeX(X),
+            sizeY(Y),
+            field(new Tile[static_cast<std::size_t>(X) * Y]) {
 
           for(int i=0;i<sizeX*sizeY; i++){
               field[i].isMine = GetRandomValue(0, 1);
@@ -88,8 +42,30 @@ class Minefield{
               for(int x=0; x<sizeX;x++){
                   Tile& current = at(x,y);
                   //std::cout << current.id << "\n";
-                  current.button.position.x = (current.button.size.x*x)+(x*spacing)+ GetScreenWidth()/2- (current.button.size.x*sizeX+(spacing*sizeX))/2;
-                  current.button.position.y = (current.button.size.y*y)+(y*spacing)+ GetScreenHeight()/2-(current.button.size.y*sizeY+(spacing*sizeY))/2;
+                  current.button.position.x = (current.button.size.x*x)+(x*spacing)+ GetScreenWidth()/2.0f- (current.button.size.x*sizeX+(spacing*sizeX))/2;
+                  current.button.position.y = (current.button.size.y*y)+(y*spacing)+ GetScreenHeight()/2.0f-(current.button.size.y*sizeY+(spacing*sizeY))/2;
+
+
+                  int i=0;
+                  for(int sy=y-1;sy<=y+1;sy++){
+                      for(int sx=x-1;sx<=x+1;sx++){
+                          try {
+                              if (at(sx, sy).isMine) {
+                                  i++;
+                              }
+
+                          } catch (std::range_error e) {
+
+                              //ignore error because it is expected on edges and corners
+                          }
+                      }
+                  }
+                  current.nearMines = i;
+
+
+
+                  current.click();
+
               }
           }
       }
