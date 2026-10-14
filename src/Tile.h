@@ -1,39 +1,55 @@
 #pragma once
 
+// Declares the state and visual behavior of one cell in the minefield.
+
 #include "GUIbutton.h"
 #include "raylib.h"
 
+/// A single Minesweeper cell and the GUI control used to display it.
 struct Tile{
+    // All tiles share the same texture set; see Tile.cpp for the index layout.
     static Texture2D textures[12];
 
+    /// Loads the shared tile textures. Call only after raylib initializes a window.
     static void loadTextures();
+
+    /// Releases all shared textures before the raylib window is closed.
     static void unloadTextures();
-    enum State{unknown,cleared,flagged};
+
+    /// Logical visibility/marking state of the cell.
+    enum State{
+        unknown, ///< Covered and available for interaction.
+        cleared, ///< Revealed by a left click.
+        flagged  ///< Marked as a suspected mine by a right click.
+    };
+
     State state;
     GUIbutton button;
-    int nearMines = 0;
+    int nearMines = 0; ///< Number of mines in the surrounding 3x3 region.
     bool isMine = false;
-    int id;
+    int id;            ///< Row-major index assigned by Minefield.
 
+    /// Reveals the cell and selects either its mine or adjacent-count texture.
     void click(){
         changeState(cleared);
 
         if(isMine){
+            // The final texture slot is reserved for the revealed mine face.
             button.tex = textures[11];
-            //button.tint = RED;
-
         }
         else
         {
+            // Number textures occupy indices 0-8, matching nearMines directly.
             button.tex = textures[nearMines];
-
         }
-
     }
+
+    /// Marks the cell with the flag texture.
     void flag(){
         changeState(flagged);
     }
 
+    /// Creates a cell and wires its mouse callbacks to this tile's actions.
     Tile(bool mine = false)
         : button(
               Vector2{0, 0},
@@ -43,11 +59,16 @@ struct Tile{
               [this]{flag();}
           ),
           isMine(mine)
-    {this->changeState(unknown);}
+    {
+        // Begin covered regardless of whether the tile contains a mine.
+        this->changeState(unknown);
+    }
 
 
+    /// Updates the logical state and its corresponding covered/flagged visual.
     void changeState(State in){
         state =in;
+        // State-specific tinting below starts from the normal texture color.
         button.tint = WHITE;
         switch (state) {
             case cleared:

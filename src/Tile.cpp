@@ -1,9 +1,12 @@
 #include "Tile.h"
 
+// Shared by every tile so the image resources are loaded only once.
 Texture2D Tile::textures[12]{};
 
 void Tile::loadTextures()
 {
+    // This order is part of the Tile rendering contract: indices 0-9 are the
+    // blank/number faces, index 10 is the flag, and index 11 is the mine.
     static const char* paths[12] = {
         "src/images/Tile-blank.png",
         "src/images/Tile-1.png",
@@ -19,6 +22,7 @@ void Tile::loadTextures()
         "src/images/Tile-mine.png"
     };
 
+    // A raylib window must exist before these GPU-backed textures are loaded.
     for (int i = 0; i < 12; ++i) {
         textures[i] = LoadTexture(paths[i]);
     }
@@ -26,6 +30,7 @@ void Tile::loadTextures()
 
 void Tile::unloadTextures()
 {
+    // Reset each handle after releasing it, making repeated cleanup harmless.
     for (Texture2D& texture : textures) {
         if (texture.id != 0) {
             UnloadTexture(texture);
