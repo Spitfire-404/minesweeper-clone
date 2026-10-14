@@ -18,4 +18,6 @@ soLibFiles=$(find "$(cd ${libDir}; pwd)" -name "*.so"  | tr '\n' ' ' | sed 's|/[
 # Compile with proper include paths and link against raylib
 
 g++ ${cFiles} ${cppFiles} ${aLibFiles} ${hLibFiles} ${hFiles} ${soLibFiles} -g3 -o ${buildDir}/'app'
+x86_64-w64-mingw32-g++ ${cFiles} ${cppFiles} ${aLibFiles} ${hLibFiles} ${hFiles} ${soLibFiles} -g3 -o ${buildDir}/'app.exe'
+
 #g++ ${cFiles} ${cppFiles} ${aLibFiles} ${hLibFiles} ${hFiles} ${soLibFiles} -g0 -o ${buildDir}/'app'
