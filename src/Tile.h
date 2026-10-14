@@ -4,12 +4,12 @@
 #include "raylib.h"
 
 struct Tile{
-    static Texture2D textures[10];
+    static Texture2D textures[12];
 
     static void loadTextures();
     static void unloadTextures();
     enum State{unknown,cleared,flagged};
-    State state = unknown;
+    State state;
     GUIbutton button;
     int nearMines = 0;
     bool isMine = false;
@@ -19,8 +19,8 @@ struct Tile{
         changeState(cleared);
 
         if(isMine){
-            button.tex = textures[0];
-            button.tint = RED;
+            button.tex = textures[11];
+            //button.tint = RED;
 
         }
         else
@@ -43,20 +43,22 @@ struct Tile{
               [this]{flag();}
           ),
           isMine(mine)
-    {}
+    {this->changeState(unknown);}
 
 
     void changeState(State in){
         state =in;
+        button.tint = WHITE;
         switch (state) {
             case cleared:
                 this->button.tex = textures[0];
                 break;
             case unknown:
                 this->button.tex = textures[0];
+                this->button.tint = GRAY;
                 break;
             case flagged:
-                this->button.tex = textures[8];
+                this->button.tex = textures[10];
 
         }
     }

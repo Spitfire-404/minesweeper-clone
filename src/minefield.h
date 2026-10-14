@@ -64,7 +64,7 @@ class Minefield{
 
 
 
-                  current.click();
+                  //current.click();
 
               }
           }
