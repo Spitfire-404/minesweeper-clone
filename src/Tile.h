@@ -29,7 +29,11 @@ struct Tile{
     bool isMine = false;
     bool hasBeenClicked = false;
     int id;            ///< Row-major index assigned by Minefield.
+<<<<<<< HEAD
     void* parent = nullptr;/// this needs to be a void pointer annoyingly
+=======
+    void* parent = nullptr;
+>>>>>>> 3e4c7b7cb328de7559666475e2279016789ad876
 
     /// Reveals the cell and selects either its mine or adjacent-count texture.
     void click();
