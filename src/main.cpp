@@ -4,6 +4,7 @@
 #include <vector>
 
 int main() {
+
     // Initialization
     const int screenWidth = 800;
     const int screenHeight = 450;
@@ -19,9 +20,11 @@ int main() {
     while (!WindowShouldClose()) {
         // Draw
         BeginDrawing();
-
-
         ClearBackground(RAYWHITE);
+
+        mainField.updateAll();
+
+
 
         EndDrawing();
     }

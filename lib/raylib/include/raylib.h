@@ -82,6 +82,8 @@
 *
 **********************************************************************************************/
 
+
+
 #ifndef RAYLIB_H
 #define RAYLIB_H
 
@@ -215,6 +217,16 @@
 typedef struct Vector2 {
     float x;                // Vector x component
     float y;                // Vector y component
+
+    void operator=(float in){
+        x = in;
+        y = in;
+    }
+    void operator-=(float in){
+        x-=in;
+        y-=in;
+    }
+
 } Vector2;
 
 // Vector3, 3 components
@@ -1700,6 +1712,9 @@ RLAPI void DetachAudioStreamProcessor(AudioStream stream, AudioCallback processo
 
 RLAPI void AttachAudioMixedProcessor(AudioCallback processor); // Attach audio stream processor to the entire audio pipeline, receives the samples as 'float'
 RLAPI void DetachAudioMixedProcessor(AudioCallback processor); // Detach audio stream processor from the entire audio pipeline
+
+
+
 
 #if defined(__cplusplus)
 }
